@@ -32,7 +32,7 @@ class MotionControl:
     #         self.my_pwm.ChangeDutyCycle(duty_cycle)
     #         self.last_pwm = duty_cycle
     
-    def forward(self, duty_cycle=50):
+    def forward(self, multiplier=1, duty_cycle=30):
         """ 
         Move vehicle forward
         Left wheel will turn anticlockwise
@@ -40,8 +40,8 @@ class MotionControl:
         """
         self.left_wheel.set_anticlockwise()
         self.right_wheel.set_clockwise()
-        self.left_wheel.accelerate()
-        self.right_wheel.accelerate()
+        self.left_wheel.accelerate(duty_cycle)
+        self.right_wheel.accelerate(duty_cycle)
 
     def stop(self):
         """ 
@@ -52,7 +52,7 @@ class MotionControl:
         self.left_wheel.stop()
         self.right_wheel.stop()
     
-    def reverse(self, duty_cycle=50):
+    def reverse(self, multiplier=1, duty_cycle=35):
         """ 
         Move vehicle forward
         Left wheel will turn clockwise
@@ -60,10 +60,10 @@ class MotionControl:
         """
         self.right_wheel.set_anticlockwise()
         self.left_wheel.set_clockwise()
-        self.left_wheel.accelerate()
-        self.right_wheel.accelerate()
+        self.left_wheel.accelerate(duty_cycle)
+        self.right_wheel.accelerate(duty_cycle)
 
-    def left(self, duty_cycle=10):
+    def left(self, multiplier=1, duty_cycle=30):
         """ 
         Move vehicle forward
         Left wheel will turn clockwise
@@ -71,10 +71,10 @@ class MotionControl:
         """
         self.right_wheel.set_clockwise()
         self.left_wheel.set_clockwise()
-        self.left_wheel.accelerate()
-        self.right_wheel.accelerate()
+        self.left_wheel.accelerate(duty_cycle)
+        self.right_wheel.accelerate(duty_cycle)
     
-    def right(self, duty_cycle=10):
+    def right(self, multiplier=1, duty_cycle=30):
         """ 
         Move vehicle forward
         Left wheel will turn anticlockwise
@@ -82,5 +82,44 @@ class MotionControl:
         """
         self.right_wheel.set_anticlockwise()
         self.left_wheel.set_anticlockwise()
-        self.left_wheel.accelerate()
-        self.right_wheel.accelerate()
+        self.left_wheel.accelerate(duty_cycle)
+        self.right_wheel.accelerate(duty_cycle)
+
+    def steer_forward(self, degree=0, gas=1, multiplier=1, duty_cycle=35):
+        ceiling = 50
+        floor = 0
+        mid = (ceiling+floor)/2
+        diff = (ceiling-floor)/2
+        bias = diff * degree 
+        self.left_wheel.set_anticlockwise()
+        self.right_wheel.set_clockwise()
+        self.left_wheel.accelerate(mid + bias)
+        self.right_wheel.accelerate(mid - bias)
+
+    def steer_forward_2(self, degree=0, gas=1, multiplier=1, duty_cycle=35):
+        duty_cycle = duty_cycle*gas*multiplier
+        if degree == 0:
+            self.left_wheel.set_anticlockwise()
+            self.right_wheel.set_clockwise()
+            self.left_wheel.accelerate(duty_cycle)
+            self.right_wheel.accelerate(duty_cycle)
+        elif degree < 0:
+            new_cycle = duty_cycle - ((duty_cycle*2) * abs(degree))
+            if new_cycle < 0:
+                self.left_wheel.set_clockwise()
+            else:
+                self.left_wheel.set_anticlockwise()
+            self.right_wheel.set_clockwise()
+            
+            self.left_wheel.accelerate(abs(new_cycle))
+            self.right_wheel.accelerate(duty_cycle)
+        else:
+            new_cycle = duty_cycle - ((duty_cycle*2) * abs(degree))
+            if new_cycle < 0:
+                self.right_wheel.set_anticlockwise()
+            else:
+                self.right_wheel.set_clockwise()
+            self.left_wheel.set_anticlockwise()
+
+            self.left_wheel.accelerate(duty_cycle)
+            self.right_wheel.accelerate(abs(new_cycle))

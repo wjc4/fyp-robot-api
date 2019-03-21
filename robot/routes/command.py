@@ -8,7 +8,9 @@ actions = {
     'forward': motion_control.forward,
     'stop': motion_control.stop,
     'left': motion_control.left,
-    'right': motion_control.right
+    'right': motion_control.right,
+    'reverse': motion_control.reverse,
+    'forward_steer': motion_control.steer_forward_2
 }
 
 @app.route('/command', methods=['POST','PUT'])
@@ -16,6 +18,8 @@ def command():
     data = request.get_json()
     # print(data)
     action = data['action']
+    gas = data['gas'] if 'gas' in data else 1
+    multiplier = data['multiplier'] if 'multiplier' in data else 1
     if action in actions:
         actions[action]()
     return jsonify({'status':'ok'})
