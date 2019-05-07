@@ -11,12 +11,11 @@ class DCMotor:
     def __init__(self, pin_one, pin_two,
                  pwm_pin, freq=100, verbose=False, name="DCMotor"):
         """ init method
-        (1) pin_one, type=int,  GPIO pin connected to IN1 or IN3
-        (2) Pin two type=int, GPIO pin connected to IN2 or IN4
-        (3) pwm_pin type=int, GPIO pin connected to EnA or ENB
+        (1) pin_one, type=int,  GPIO pin connected to IN1
+        (2) Pin two type=int, GPIO pin connected to IN2
+        (3) pwm_pin type=int, GPIO pin connected to PWM
         (4) freq in Hz default 100
-        (5) verbose, type=bool  type=bool default=False
-         help="Write pin actions"
+        (5) verbose, type=bool default=False
         (6) name, type=string, name attribute
         """
         self.name = name
@@ -37,9 +36,9 @@ class DCMotor:
         self.my_pwm.start(self.last_pwm)
         if self.verbose:
             print(" Motor initialized named: {} ".format(self.name))
-            print(" Pin one In1 or In3:  {}".format(self.pin_one))
-            print(" Pin two In2 or in4:  {}".format(self.pin_two))
-            print(" Pin pwm enA or enB:  {}".format(self.pwm_pin))
+            print(" Pin one IN1:  {}".format(self.pin_one))
+            print(" Pin two IN2:  {}".format(self.pin_two))
+            print(" Pin pwm PWM:  {}".format(self.pwm_pin))
             print(" Frequency: {} ".format(self.freq))
 
     def clockwise(self, duty_cycle=50):
@@ -93,17 +92,17 @@ class DCMotor:
             GPIO.cleanup()
 
     def set_clockwise(self):
-        """ Move motor forwards passed duty cycle for speed control """
+        """ Set motor in clockwise direction"""
         GPIO.output(self.pin_one, True)
         GPIO.output(self.pin_two, False)
 
     def set_anticlockwise(self):
-        """ Move motor backwards passed duty cycle for speed control"""
+        """ Set motor in anticlockwise direction """
         GPIO.output(self.pin_one, False)
         GPIO.output(self.pin_two, True)
     
     def accelerate(self, duty_cycle=50):
-        """ Move motor backwards passed duty cycle for speed control"""
+        """ Turn motor on at given speed """
         if self.verbose:
             print("Moving Motor: Duty Cycle = {}".format(duty_cycle))
         if duty_cycle != self.last_pwm:
